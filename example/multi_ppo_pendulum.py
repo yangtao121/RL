@@ -10,12 +10,15 @@ from common.worker import MultiWorker
 from common.policy import Gaussian_policy
 from common.critic import Critic
 from common.NeuralNet import gaussian_mlp, mlp
+import tensorflow as tf # 必须加入不然会出现init error
 
-worker_num = 4
+
+worker_num = 20
 env = gym.make("Pendulum-v0").unwrapped
 observation_dims = env.observation_space.shape[0]
 action_dims = env.action_space.shape[0]
 envs = [gym.make("Pendulum-v0").unwrapped for i in range(worker_num)]
+
 
 env_args = EnvArgs(
     trajs=10,

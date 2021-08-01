@@ -31,6 +31,7 @@ class PPO:
             self.policy.net_visual()
             self.critic.net_visual()
 
+    @tf.function
     def critic_train(self, observation, target):
         with tf.GradientTape() as tape:
             v = self.critic.Model(observation)
@@ -42,6 +43,7 @@ class PPO:
         grad = tape.gradient(critic_loss, self.critic.Model.trainable_weights)
         self.critic_optimizer.apply_gradients(zip(grad, self.critic.Model.trainable_weights))
 
+    @tf.function
     def policy_train(self, state, action, advantage, old_prob):
         """
 
@@ -139,7 +141,7 @@ class PPO:
             time_start = time.time()
             batches = self.worker.runner()
             time_end = time.time()
-            print('consume time:{}'.format(time_end-time_start))
+            print('consuming time:{}'.format(time_end - time_start))
 
             self.optimize(batches)
             self.policy.save_model()
