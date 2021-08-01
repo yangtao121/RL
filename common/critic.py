@@ -14,7 +14,7 @@ class Critic:
         if file is None:
             tf.keras.models.save_model(self.Model, 'critic.h5', overwrite=True)
         else:
-            self.Model.save_model(filepath=file, overwrite=True)
+            tf.keras.models.save_model(self.Model, filepath=file + '/critic.h5', overwrite=True)
 
     def load_model(self, file):
         self.Model = tf.keras.models.load_model(filepath=file)

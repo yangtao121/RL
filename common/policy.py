@@ -19,7 +19,7 @@ class Gaussian_policy:
         if file is None:
             tf.keras.models.save_model(self.Model, 'policy.h5', overwrite=True)
         else:
-            tf.keras.models.save_model(self.Model, file, overwrite=True)
+            tf.keras.models.save_model(self.Model, file+'/policy.h5', overwrite=True)
 
     def load_model(self, file):
         self.Model = tf.keras.models.load_model(filepath=file)

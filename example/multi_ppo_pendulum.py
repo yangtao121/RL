@@ -10,17 +10,17 @@ from common.worker import MultiWorker
 from common.policy import Gaussian_policy
 from common.critic import Critic
 from common.NeuralNet import gaussian_mlp, mlp
+
 # import multiprocessing as mp
 #
 # mp.set_start_method('forkserver')
 
 
-worker_num = 10
+worker_num = 3
 env = gym.make("Pendulum-v0").unwrapped
 observation_dims = env.observation_space.shape[0]
 action_dims = env.action_space.shape[0]
 envs = [gym.make("Pendulum-v0").unwrapped for i in range(worker_num)]
-
 
 env_args = EnvArgs(
     trajs=10,

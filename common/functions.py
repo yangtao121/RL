@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 
 def cal_simple_adv(policy, state, discount_reward):
@@ -60,6 +61,14 @@ def standardize(data):
         np.mean(data),
         np.std(data)
     )
-    data = (data - mean)/std
+    data = (data - mean) / std
 
     return data
+
+
+def mkdir(path):
+    current = os.getcwd()
+    path = current+'/'+path
+    flag = os.path.exists(path)
+    if flag is False:
+        os.mkdir(path)

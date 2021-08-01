@@ -2,6 +2,7 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 import numpy as np
 import time
+from common.functions import mkdir
 
 
 class PPO:
@@ -144,7 +145,13 @@ class PPO:
                 self.policy_train(state, action, gae, old_prob)
                 self.critic_train(state, target)
 
-    def train(self):
+    def train(self, path=None):
+        if path is None:
+            path = 'data'
+            mkdir(path)
+        else:
+            mkdir(path)
+
         for i in range(self.epochs):
             print("---------------------obtain samples:{}---------------------".format(i))
             self.worker.update(self.policy, self.critic)
@@ -155,6 +162,6 @@ class PPO:
             print('consuming time:{}'.format(time_end - time_start))
 
             self.optimize(batches)
-            self.policy.save_model()
-            self.critic.save_model()
+            self.policy.save_model(path)
+            self.critic.save_model(path)
             print("----------------------------------------------------------")
