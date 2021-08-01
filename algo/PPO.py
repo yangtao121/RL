@@ -33,6 +33,8 @@ class PPO:
 
     @tf.function
     def critic_train(self, observation, target):
+        observation = tf.convert_to_tensor(observation, dtype=tf.float32)
+        target = tf.convert_to_tensor(target, dtype=tf.float32)
         with tf.GradientTape() as tape:
             v = self.critic.Model(observation)
             surrogate1 = tf.square(v[1:] - target[1:])
@@ -42,6 +44,15 @@ class PPO:
 
         grad = tape.gradient(critic_loss, self.critic.Model.trainable_weights)
         self.critic_optimizer.apply_gradients(zip(grad, self.critic.Model.trainable_weights))
+
+    # @tf.function
+    # def critic_train(self, state, discount_reward):
+    #     with tf.GradientTape() as tape:
+    #         v = self.critic.Model(state)
+    #         critic_loss = tf.reduce_mean(tf.square(discount_reward - v))
+    #
+    #     grad = tape.gradient(critic_loss, self.critic.Model.trainable_weights)
+    #     self.critic_optimizer.apply_gradients(zip(grad, self.critic.Model.trainable_weights))
 
     @tf.function
     def policy_train(self, state, action, advantage, old_prob):
