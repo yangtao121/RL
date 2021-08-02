@@ -1,11 +1,11 @@
 import gym
-from common.args import EnvArgs, HyperParameter
-from algo.PPO import PPO
+from RL.common import EnvArgs, HyperParameter
+from RL.algo import PPO
 
-from common.worker import Worker
-from common.policy import Gaussian_policy
-from common.critic import Critic
-from common.NeuralNet import gaussian_mlp, mlp
+from RL.common import Worker
+from RL.common import Gaussian_policy
+from RL.common import Critic
+from RL.common import gaussian_mlp, mlp
 
 env = gym.make("Pendulum-v0").unwrapped
 observation_dims = env.observation_space.shape[0]
