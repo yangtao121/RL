@@ -3,7 +3,7 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 import gym
-from args import EnvArgs, HyperParameter
+from common.args import EnvArgs, HyperParameter
 from algo.PPO import PPO
 
 from common.worker import MultiWorker

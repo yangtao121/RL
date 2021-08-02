@@ -1,5 +1,5 @@
 import gym
-from args import EnvArgs, HyperParameter
+from common.args import EnvArgs, HyperParameter
 from algo.PPO import PPO
 
 from common.worker import Worker
