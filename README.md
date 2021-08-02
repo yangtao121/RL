@@ -6,3 +6,11 @@
 3. 优化运行速度。
 ## 2021年8月2日
 1. 添加setup.py。
+
+# 安装说明
+`git clone https://github.com/yangtao121/RL
+`
+
+`git checkout package`
+
+`pip install -e .`
