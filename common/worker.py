@@ -68,6 +68,65 @@ class Worker:
         return batches
 
 
+class Worker2:
+    def __init__(self, env_args, hyper_parameter):
+        self.trajs = env_args.trajs
+        self.batch_size = env_args.batch_size
+        self.steps = env_args.steps
+
+        self.policy = None
+        self.critic = None
+
+        self.obs_dims = env_args.observation_dims
+        self.act_dims = env_args.action_dims
+
+        self.gamma = hyper_parameter.gamma
+        self.lambada = hyper_parameter.lambada
+
+    def update(self, policy, critic):
+        """
+        使用新的policy和critic
+        :param policy:
+        :param critic:
+        :return:
+        """
+
+        self.policy = policy
+        self.critic = critic
+
+    def runner(self, env):
+        # print('start')
+        batches = []
+        for i in range(self.trajs):
+            collector = Collector(observation_dims=self.obs_dims, action_dims=self.act_dims,
+                                  episode_length=self.steps)
+            state = env.reset()
+            # print(i)
+
+            for t in range(self.steps):
+                state = state.reshape(1, -1)
+                action, prob = self.policy.get_action(state)
+
+                action_ = action * 2
+
+                state_, reward, done, _ = env.step(action_)
+                collector.store(state, action, reward, prob)
+                state = state_
+
+                if (t + 1) % self.batch_size == 0 or t == self.steps - 1:
+                    observations, reward = collector.get_current_data()
+                    value_ = self.critic.get_value(state_.reshape(1, -1))
+                    values = self.critic.get_value(observations)
+
+                    gae, target = gae_target(self.gamma, self.lambada, reward, values, value_, done)
+
+                    collector.get_gae_target(gae, target)
+
+            batches.append(collector)
+
+        return batches
+
+
 class MultiWorker:
     def __init__(self, envs, env_args, hyper_parameter):
         self.workers = []
