@@ -6,6 +6,8 @@
 3. 优化运行速度。
 ## 2021年8月2日
 1. 添加setup.py。
+## 2021年8月3日
+1. 规定optimize函数返回值。
 
 # 安装说明
 `git clone https://github.com/yangtao121/RL

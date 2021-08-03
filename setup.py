@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="RL",
-    version="1.1",
+    version="1.2",
     author="Tao Yang",
     author_email="291843078@qq.com",
     py_modules=[
