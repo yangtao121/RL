@@ -1,7 +1,7 @@
 自建的RL算法库。
 # TODO
-# 加入tensorboard的功能。
 1. load_model函数设计不合理，文件名格式不统一。
+2. 加入tensorboard的功能。
 # 更新信息
 ## 2021年8月1日
 1. 添加了PPO算法。
