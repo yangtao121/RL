@@ -16,14 +16,14 @@ from common.NeuralNet import gaussian_mlp, mlp
 # mp.set_start_method('forkserver')
 
 
-worker_num = 3
+worker_num = 10
 env = gym.make("Pendulum-v0").unwrapped
 observation_dims = env.observation_space.shape[0]
 action_dims = env.action_space.shape[0]
 envs = [gym.make("Pendulum-v0").unwrapped for i in range(worker_num)]
 
 env_args = EnvArgs(
-    trajs=10,
+    trajs=2,
     steps=200,
     epochs=120,
     batch_size=40,

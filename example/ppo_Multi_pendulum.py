@@ -8,13 +8,13 @@ from common.policy import Gaussian_policy
 from common.critic import Critic
 from common.NeuralNet import gaussian_mlp, mlp
 
-worker_num = 3
+worker_num = 5
 env_name = "Pendulum-v0"
 observation_dims = 3
 action_dims = 1
 
 env_args = EnvArgs(
-    trajs=10,
+    trajs=2,
     steps=200,
     epochs=120,
     batch_size=40,
