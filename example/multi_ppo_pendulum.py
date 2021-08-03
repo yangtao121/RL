@@ -3,13 +3,13 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 import gym
-from RL.common import EnvArgs, HyperParameter
-from RL.algo import PPO
+from RL.common.args import EnvArgs, HyperParameter
+from RL.algo.PPO import PPO
 
-from RL.common import MultiWorker
-from RL.common import Gaussian_policy
-from RL.common import Critic
-from RL.common import gaussian_mlp, mlp
+from RL.common.worker import MultiWorker
+from RL.common.policy import Gaussian_policy
+from RL.common.critic import Critic
+from RL.common.NeuralNet import gaussian_mlp, mlp
 
 # import multiprocessing as mp
 #
