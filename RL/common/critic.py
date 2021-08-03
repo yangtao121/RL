@@ -17,7 +17,7 @@ class Critic:
             tf.keras.models.save_model(self.Model, filepath=file + '/critic.h5', overwrite=True)
 
     def load_model(self, file):
-        self.Model = tf.keras.models.load_model(filepath=file)
+        self.Model = tf.keras.models.load_model(filepath=file, compile=False)
 
     def clone_mode(self):
         model = tf.keras.models.clone_model(self.Model)

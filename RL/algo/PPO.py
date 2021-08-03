@@ -109,9 +109,14 @@ class PPO:
             sum_reward = np.sum(batch.reward_buffer)
             sum_rewards.append(sum_reward)
         sum_rewards = np.hstack(sum_rewards)
-        print("Max episode reward:{}".format(np.max(sum_rewards)))
-        print("Min episode reward:{}".format(np.min(sum_rewards)))
-        print("Average episode reward:{}".format(np.mean(sum_rewards)))
+        info = {
+            'max': np.max(sum_rewards),
+            'min': np.min(sum_rewards),
+            'avg': np.mean(sum_rewards)
+        }
+        print("Max episode reward:{}".format(info['max']))
+        print("Min episode reward:{}".format(info["min"]))
+        print("Average episode reward:{}".format(info["avg"]))
 
         observation_buffer = np.concatenate([batch.observation_buffer for batch in batches])
         reward_buffer = np.concatenate([batch.reward_buffer for batch in batches])
@@ -144,6 +149,7 @@ class PPO:
                 target = targets[path]
                 self.policy_train(state, action, gae, old_prob)
                 self.critic_train(state, target)
+        return info
 
     def train(self, path=None):
         if path is None:
