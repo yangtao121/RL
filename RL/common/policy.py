@@ -1,5 +1,6 @@
 import tensorflow as tf
 import tensorflow_probability as tfp
+import gc
 
 
 class Gaussian_policy:
@@ -12,6 +13,7 @@ class Gaussian_policy:
         dist = tfp.distributions.Normal(mu, sigma)
         action = tf.squeeze(dist.sample(), axis=0)
         prob = tf.squeeze(dist.prob(action), axis=0)
+        gc.collect()
 
         return action, prob
 
@@ -19,7 +21,7 @@ class Gaussian_policy:
         if file is None:
             tf.keras.models.save_model(self.Model, 'policy.h5', overwrite=True)
         else:
-            tf.keras.models.save_model(self.Model, file+'/policy.h5', overwrite=True)
+            tf.keras.models.save_model(self.Model, file + '/policy.h5', overwrite=True)
 
     def load_model(self, file):
         self.Model = tf.keras.models.load_model(filepath=file, compile=False)
