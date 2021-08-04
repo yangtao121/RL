@@ -102,7 +102,6 @@ class PPO:
 
         return actor_loss, critic_loss
 
-    # @tf.function
     def optimize(self, batches):
         sum_rewards = []
         for batch in batches:
@@ -135,8 +134,10 @@ class PPO:
         print('loss before, actor:{},critic:{}'.format(actor_loss_before, critic_loss_before))
 
         for _ in tf.range(0, self.update_steps):
-            for i in tf.range(0, self.span):
-                path = slice(i * self.batch_size, (i + 1) * self.batch_size)
+            j = 0
+            for _ in tf.range(0, self.span):
+                path = slice(j * self.batch_size, (j + 1) * self.batch_size)
+                print(path)
                 state = observation_buffer[path]
                 action = action_buffer[path]
                 gae = gaes[path]
@@ -144,6 +145,7 @@ class PPO:
                 target = targets[path]
                 self.policy_train(state, action, gae, old_prob)
                 self.critic_train(state, target)
+                j += 1
 
     def train(self, path=None):
         if path is None:
