@@ -1,5 +1,7 @@
-import tensorflow as tf
-from tensorflow.keras import layers
+# import tensorflow as tf
+# from tensorflow.keras import layers
+import keras
+from keras import layers
 
 
 def gaussian_mlp(state_dims, output_dims, hidden_size, hidden_activation='relu', output_activation='tanh',
@@ -23,9 +25,9 @@ def gaussian_mlp(state_dims, output_dims, hidden_size, hidden_activation='relu',
     sigma = layers.Dense(output_dims, activation='softplus', name=name + '_sigma_output',
                          )(hidden_layer)
 
-    model = tf.keras.Model(inputs=state_input_layer,
-                           outputs=[mu, sigma],
-                           name=name + '_model', )
+    model = keras.Model(inputs=state_input_layer,
+                        outputs=[mu, sigma],
+                        name=name + '_model', )
 
     return model
 
@@ -42,10 +44,10 @@ def mlp(state_dims, output_dims, hidden_size, hidden_activation='relu', output_a
             continue
         hidden_layer = layers.Dense(num, activation=hidden_activation, name=name + '_hidden_' + str(i))(hidden_layer)
 
-    output_layer = layers.Dense(output_dims,activation=output_activation)(hidden_layer)
+    output_layer = layers.Dense(output_dims, activation=output_activation)(hidden_layer)
 
-    model = tf.keras.Model(inputs=state_input_layer,
-                           outputs=output_layer,
-                           name=name + '_model')
+    model = keras.Model(inputs=state_input_layer,
+                        outputs=output_layer,
+                        name=name + '_model')
 
     return model

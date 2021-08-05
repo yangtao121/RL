@@ -3,6 +3,7 @@ import tensorflow_probability as tfp
 import numpy as np
 import time
 from common.functions import mkdir
+import tensorflow as tf
 
 
 class PPO:
@@ -14,6 +15,8 @@ class PPO:
                  hyper_parameter,
                  net_visualize=False
                  ):
+        tf.keras.backend.clear_session()
+        tf.compat.v1.reset_default_graph()
         self.policy = policy
         self.critic = critic
         self.worker = worker
@@ -137,7 +140,7 @@ class PPO:
             j = 0
             for _ in tf.range(0, self.span):
                 path = slice(j * self.batch_size, (j + 1) * self.batch_size)
-                print(path)
+                # print(path)
                 state = observation_buffer[path]
                 action = action_buffer[path]
                 gae = gaes[path]
@@ -146,6 +149,11 @@ class PPO:
                 self.policy_train(state, action, gae, old_prob)
                 self.critic_train(state, target)
                 j += 1
+
+        del batches[:]
+        del batches
+        del sum_rewards
+        del sum_batch_rewards
 
     def train(self, path=None):
         if path is None:
