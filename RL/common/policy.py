@@ -1,6 +1,5 @@
 import tensorflow as tf
 import tensorflow_probability as tfp
-import gc
 
 
 class Gaussian_policy:
@@ -13,7 +12,6 @@ class Gaussian_policy:
         dist = tfp.distributions.Normal(mu, sigma)
         action = tf.squeeze(dist.sample(), axis=0)
         prob = tf.squeeze(dist.prob(action), axis=0)
-        gc.collect()
 
         return action, prob
 

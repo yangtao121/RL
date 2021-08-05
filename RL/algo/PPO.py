@@ -14,6 +14,8 @@ class PPO:
                  hyper_parameter,
                  net_visualize=False
                  ):
+        tf.keras.backend.clear_session()
+        tf.compat.v1.reset_default_graph()
         self.policy = policy
         self.critic = critic
         self.worker = worker
@@ -151,6 +153,13 @@ class PPO:
                 target = targets[path]
                 self.policy_train(state, action, gae, old_prob)
                 self.critic_train(state, target)
+
+        del batches[:]
+        del batches
+        del sum_rewards[:]
+        del sum_rewards
+        del sum_batch_rewards[:]
+        del sum_batch_rewards
         return info
 
     def train(self, path=None):
