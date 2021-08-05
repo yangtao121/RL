@@ -5,7 +5,7 @@ class Critic:
     def __init__(self, Model=None):
         self.Model = Model
 
-    @tf.function
+    # @tf.function
     def get_value(self, obs):
         v = self.Model(obs)
         v = tf.squeeze(v)
