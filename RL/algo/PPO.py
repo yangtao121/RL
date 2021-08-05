@@ -156,10 +156,6 @@ class PPO:
 
         del batches[:]
         del batches
-        del sum_rewards[:]
-        del sum_rewards
-        del sum_batch_rewards[:]
-        del sum_batch_rewards
         return info
 
     def train(self, path=None):
