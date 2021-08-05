@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="RL",
-    version="1.2",
+    version="1.3",
     author="Tao Yang",
     author_email="291843078@qq.com",
     py_modules=[
@@ -14,5 +14,6 @@ setup(
         "RL.common.policy",
         "RL.common.worker",
         "RL.algo.PPO",
-    ]
+    ],
+    install_requires=['tensorflow>=2.6.0rc2', 'tensorflow-probability>=0.13']
 )
