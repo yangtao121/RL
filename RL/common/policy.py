@@ -6,6 +6,7 @@ class Gaussian_policy:
     def __init__(self, Model=None):
         self.Model = Model
 
+    @tf.function
     def get_action(self, obs):
         mu, sigma = self.Model(obs)
 
