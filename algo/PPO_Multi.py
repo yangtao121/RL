@@ -7,6 +7,7 @@ import time
 from common.functions import mkdir
 from common.critic import Critic
 from common.policy import Gaussian_policy
+from multiprocessing import Queue
 
 
 class PPO_Multi(PPO):
@@ -46,12 +47,14 @@ class PPO_Multi(PPO):
 
     def rolling(self, env_name):
         env = gym.make(env_name).unwrapped
+        action_queue = Queue()
         worker = Worker(
             env=env,
             env_args=self.env_args,
-            hyper_parameter=self.hyper_parameter
+            hyper_parameter=self.hyper_parameter,
+            get_data_queue=action_queue
         )
-        policy = Gaussian_policy()
+        policy = Gaussian_policy(output_queue=action_queue)
         critic = Critic()
 
         for _ in range(self.epochs):
@@ -59,7 +62,7 @@ class PPO_Multi(PPO):
             critic.load_model('data/critic.h5')
             self.ROLLING_EVENT.wait()
             worker.update(policy, critic)
-            batch = worker.runner()
+            batch = worker.runner_in_multiprocess()
             self.batches.put(batch)
             if self.batches.qsize() < self.multi_worker_num - 1:
                 self.UPDATE_EVENT.wait()
