@@ -72,7 +72,7 @@ class PPO:
             mu, sigma = self.policy.Model(state)
             pi = tfp.distributions.Normal(mu, sigma)
 
-            ratio = pi.prob(action) / (old_prob + 1e-8)
+            ratio = tf.exp(tf.math.log(pi.prob(action))-old_prob)
 
             actor_loss = -tf.reduce_mean(
                 tf.minimum(
@@ -89,7 +89,7 @@ class PPO:
         mu, sigma = self.policy.Model(state)
         pi = tfp.distributions.Normal(mu, sigma)
 
-        ratio = pi.prob(action) / (old_prob + 1e-8)
+        ratio = tf.exp(tf.math.log(pi.prob(action))-old_prob)
 
         v = self.critic.Model(state)
         surrogate1 = tf.square(v[1:] - discount_reward[1:])
