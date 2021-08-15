@@ -12,7 +12,8 @@ class Gaussian_policy:
 
         dist = tfp.distributions.Normal(mu, sigma)
         action = tf.squeeze(dist.sample(), axis=0)
-        prob = tf.squeeze(tf.math.log(dist.prob(action)), axis=0)
+
+        prob = tf.squeeze(dist.prob(action), axis=0)
 
         return action, prob
 
