@@ -11,6 +11,7 @@ class Critic:
         v = tf.squeeze(v)
         return v
 
+    # @tf.function
     def save_model(self, file=None):
         if file is None:
             tf.keras.models.save_model(self.Model, 'critic.h5', overwrite=True)

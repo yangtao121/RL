@@ -15,5 +15,5 @@ setup(
         "RL.common.worker",
         "RL.algo.PPO",
     ],
-    install_requires=['tensorflow>=2.6.0rc2', 'tensorflow-probability>=0.13']
+    install_requires=['tensorflow>=2.6.0', 'tensorflow-probability>=0.13']
 )

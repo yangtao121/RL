@@ -17,6 +17,7 @@ class Gaussian_policy:
 
         return action, prob
 
+    # @tf.function
     def save_model(self, file=None):
         if file is None:
             tf.keras.models.save_model(self.Model, 'policy.h5', overwrite=True)
