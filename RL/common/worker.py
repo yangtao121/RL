@@ -45,7 +45,9 @@ class Worker:
             for t in range(self.steps):
                 action, prob = self.policy.get_action(state)
 
-                state_, reward, done, _ = self.env.step(action)
+                action_ = action*2
+
+                state_, reward, done, _ = self.env.step(action_)
                 collector.store(state, action, reward, prob)
                 state = state_
 
@@ -53,6 +55,8 @@ class Worker:
                     observations, reward = collector.get_current_data()
                     value_ = self.critic.get_value(state_)
                     values = self.critic.get_value(observations)
+                    if done:
+                        value_ = 0
 
                     gae, target = gae_target(self.gamma, self.lambada, reward, values, value_, done)
 

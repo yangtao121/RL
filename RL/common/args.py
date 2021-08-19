@@ -1,6 +1,13 @@
 class EnvArgs:
     def __init__(self, trajs, steps, epochs, batch_size, mini_batch_size_num, observation_dims, action_dims,
                  multi_worker_num=None):
+        if multi_worker_num is not None:
+            self.total_steps = trajs * steps * multi_worker_num
+            self.multi_worker_num = multi_worker_num
+
+        else:
+            self.total_steps = trajs*steps
+
         self.trajs = trajs
         self.steps = steps
         self.batch_size = batch_size
@@ -8,11 +15,9 @@ class EnvArgs:
         self.observation_dims = observation_dims
         self.action_dims = action_dims
         self.epochs = epochs
-        self.span = int((trajs * steps) / mini_batch_size_num)
-
-        if multi_worker_num is not None:
-            self.span = int((multi_worker_num * trajs * steps) / batch_size)
-            self.multi_worker_num = multi_worker_num
+        self.span = int(self.total_steps/batch_size)
+        self.mini_batch_size_num = mini_batch_size_num
+        self.mini_batch_size = int(self.total_steps/self.mini_batch_size_num)
 
 
 class HyperParameter:

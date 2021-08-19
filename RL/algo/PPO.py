@@ -30,6 +30,9 @@ class PPO:
         self.span = env_args.span
         self.epochs = env_args.epochs
 
+        self.mini_batch_size_num = env_args.mini_batch_size_num
+        self.mini_batch_size = env_args.mini_batch_size
+
         if net_visualize:
             self.policy.net_visual()
             self.critic.net_visual()
@@ -139,9 +142,9 @@ class PPO:
             sum_rewards = np.sum(reward_buffer[path])
             sum_batch_rewards.append(sum_rewards)
 
-        print("Max batch reward:{}".format(np.max(sum_batch_rewards)))
-        print("Min batch reward:{}".format(np.min(sum_batch_rewards)))
-        print("Average batch reward:{}".format(np.mean(sum_batch_rewards)))
+        print("Max mini_batch reward:{}".format(np.max(sum_batch_rewards)))
+        print("Min mini_batch reward:{}".format(np.min(sum_batch_rewards)))
+        print("Average mini_batch reward:{}".format(np.mean(sum_batch_rewards)))
 
         observation_buffer = tf.cast(observation_buffer, dtype=tf.float32)
         action_buffer = tf.cast(action_buffer, dtype=tf.float32)
@@ -154,8 +157,8 @@ class PPO:
         # print('loss before, actor:{},critic:{}'.format(actor_loss_before, critic_loss_before))
 
         for _ in tf.range(0, self.update_steps):
-            for i in tf.range(0, self.span):
-                path = slice(i * self.batch_size, (i + 1) * self.batch_size)
+            for i in tf.range(0, self.mini_batch_size_num):
+                path = slice(i * self.mini_batch_size, (i + 1) * self.mini_batch_size)
                 state = observation_buffer[path]
                 action = action_buffer[path]
                 gae = gaes[path]
