@@ -16,17 +16,18 @@ from RL.common.NeuralNet import gaussian_mlp, mlp
 # mp.set_start_method('forkserver')
 
 
-worker_num = 3
+worker_num = 20
 env = gym.make("Pendulum-v0").unwrapped
 observation_dims = env.observation_space.shape[0]
 action_dims = env.action_space.shape[0]
 envs = [gym.make("Pendulum-v0").unwrapped for i in range(worker_num)]
 
 env_args = EnvArgs(
-    trajs=10,
+    trajs=1,
     steps=200,
-    epochs=120,
+    epochs=800,
     batch_size=40,
+    mini_batch_size_num=20,
     observation_dims=observation_dims,
     action_dims=action_dims,
     multi_worker_num=worker_num
@@ -38,7 +39,9 @@ hyper_parameters = HyperParameter(
     critic_learning_rate=1e-3,
     update_steps=10,
     gamma=0.99,
-    lambada=0.95
+    lambada=0.95,
+    center_adv=True,
+    clip_value=True
 )
 
 actor = gaussian_mlp(
@@ -73,4 +76,4 @@ ppo = PPO(
     net_visualize=True
 )
 
-ppo.train()
+ppo.train(title='clip_value+center_adv')

@@ -2,7 +2,8 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 import numpy as np
 import time
-from RL.common.functions import mkdir
+from RL.common.functions import mkdir, standardize
+from matplotlib import pyplot as plt
 
 
 class PPO:
@@ -12,7 +13,7 @@ class PPO:
                  worker,
                  env_args,
                  hyper_parameter,
-                 net_visualize=False
+                 net_visualize=False,
                  ):
         tf.keras.backend.clear_session()
         tf.compat.v1.reset_default_graph()
@@ -22,6 +23,9 @@ class PPO:
 
         self.clip_ratio = hyper_parameter.clip_ratio
         self.update_steps = hyper_parameter.update_steps
+        self.tolerance = hyper_parameter.tolerance
+        self.center_adv = hyper_parameter.center_adv
+        self.clip_value = hyper_parameter.clip_value
 
         self.critic_optimizer = tf.optimizers.Adam(learning_rate=hyper_parameter.critic_learning_rate)
         self.policy_optimizer = tf.optimizers.Adam(learning_rate=hyper_parameter.policy_learning_rate)
@@ -37,29 +41,34 @@ class PPO:
             self.policy.net_visual()
             self.critic.net_visual()
 
-    # @tf.function
-    # def critic_train(self, observation, target):
-    #     observation = tf.convert_to_tensor(observation, dtype=tf.float32)
-    #     target = tf.convert_to_tensor(target, dtype=tf.float32)
-    #     with tf.GradientTape() as tape:
-    #         v = self.critic.Model(observation)
-    #         surrogate1 = tf.square(v[1:] - target[1:])
-    #         surrogate2 = tf.square(
-    #             tf.clip_by_value(v[1:], v[:-1] - self.clip_ratio, v[:-1] + self.clip_ratio) - target[1:])
-    #         critic_loss = tf.reduce_mean(tf.minimum(surrogate1, surrogate2))
-    #
-    #     grad = tape.gradient(critic_loss, self.critic.Model.trainable_weights)
-    #     self.critic_optimizer.apply_gradients(zip(grad, self.critic.Model.trainable_weights))
-
-    #
     @tf.function
-    def critic_train(self, state, discount_reward):
-        with tf.GradientTape() as tape:
-            v = self.critic.Model(state)
-            critic_loss = tf.reduce_mean(tf.square(discount_reward - v))
+    def critic_train(self, observation, target):
+        observation = tf.convert_to_tensor(observation, dtype=tf.float32)
+        target = tf.convert_to_tensor(target, dtype=tf.float32)
+        if self.clip_value:
+            with tf.GradientTape() as tape:
+                v = self.critic.Model(observation)
+                surrogate1 = tf.square(v[1:] - target[1:])
+                surrogate2 = tf.square(
+                    tf.clip_by_value(v[1:], v[:-1] - self.clip_ratio, v[:-1] + self.clip_ratio) - target[1:])
+                critic_loss = tf.reduce_mean(tf.minimum(surrogate1, surrogate2))
+        else:
+            with tf.GradientTape() as tape:
+                v = self.critic.Model(observation)
+                critic_loss = tf.reduce_mean(tf.square(target - v))
 
         grad = tape.gradient(critic_loss, self.critic.Model.trainable_weights)
         self.critic_optimizer.apply_gradients(zip(grad, self.critic.Model.trainable_weights))
+
+    #
+    # @tf.function
+    # def critic_train(self, state, discount_reward):
+    #     with tf.GradientTape() as tape:
+    #         v = self.critic.Model(state)
+    #         critic_loss = tf.reduce_mean(tf.square(discount_reward - v))
+    #
+    #     grad = tape.gradient(critic_loss, self.critic.Model.trainable_weights)
+    #     self.critic_optimizer.apply_gradients(zip(grad, self.critic.Model.trainable_weights))
 
     @tf.function
     def policy_train(self, state, action, advantage, old_prob):
@@ -88,6 +97,7 @@ class PPO:
             )
         actor_grad = tape.gradient(actor_loss, self.policy.Model.trainable_weights)
         self.policy_optimizer.apply_gradients(zip(actor_grad, self.policy.Model.trainable_weights))
+        return actor_loss
 
     @tf.function
     def get_loss(self, state, action, advantage, old_prob, discount_reward):
@@ -146,6 +156,10 @@ class PPO:
         print("Min mini_batch reward:{}".format(np.min(sum_batch_rewards)))
         print("Average mini_batch reward:{}".format(np.mean(sum_batch_rewards)))
 
+        if self.center_adv:
+            gaes = standardize(gaes)
+            # print('using ')
+
         observation_buffer = tf.cast(observation_buffer, dtype=tf.float32)
         action_buffer = tf.cast(action_buffer, dtype=tf.float32)
         gaes = tf.cast(gaes, dtype=tf.float32)
@@ -155,7 +169,9 @@ class PPO:
         # actor_loss_before, critic_loss_before = self.get_loss(observation_buffer, action_buffer, gaes, old_probs,
         #                                                       targets)
         # print('loss before, actor:{},critic:{}'.format(actor_loss_before, critic_loss_before))
-
+        last_loss = 0
+        now_loss = 1
+        update_policy_flag = True
         for _ in tf.range(0, self.update_steps):
             for i in tf.range(0, self.mini_batch_size_num):
                 path = slice(i * self.mini_batch_size, (i + 1) * self.mini_batch_size)
@@ -164,8 +180,13 @@ class PPO:
                 gae = gaes[path]
                 old_prob = old_probs[path]
                 target = targets[path]
-                self.policy_train(state, action, gae, old_prob)
+                if update_policy_flag:
+                    now_loss = self.policy_train(state, action, gae, old_prob)
                 self.critic_train(state, target)
+                if abs(now_loss - last_loss) < self.tolerance:
+                    update_policy_flag = False
+                    # print(update_policy_flag)
+                last_loss = now_loss
 
         del batches[:]
         del observation_buffer
@@ -175,12 +196,14 @@ class PPO:
         del targets
         return info
 
-    def train(self, path=None):
+    def train(self, path=None, title=None):
         if path is None:
             path = 'data'
             mkdir(path)
         else:
             mkdir(path)
+
+        average_reward = []
 
         for i in range(self.epochs):
             print("---------------------obtain samples:{}---------------------".format(i))
@@ -191,7 +214,15 @@ class PPO:
             time_end = time.time()
             print('consuming time:{}'.format(time_end - time_start))
 
-            self.optimize(batches)
+            info = self.optimize(batches)
+            average_reward.append(info['avg'])
             self.policy.save_model(path)
             self.critic.save_model(path)
             print("----------------------------------------------------------")
+
+        plt.plot(average_reward)
+        plt.xlabel('episode')
+        plt.ylabel('avg_reward')
+        if title:
+            plt.title(title)
+        plt.show()
