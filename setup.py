@@ -13,6 +13,7 @@ setup(
         "RL.common.NeuralNet",
         "RL.common.policy",
         "RL.common.worker",
+        "RL.common.utilit",
         "RL.algo.PPO",
     ],
     install_requires=['tensorflow>=2.6.0', 'tensorflow-probability>=0.13']
