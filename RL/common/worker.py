@@ -51,17 +51,19 @@ class Worker:
                 action_ = action * 2
 
                 state_, reward, done, _ = self.env.step(action_)
-                collector.store(state, action, reward, prob)
+                collector.store(state, state_.reshape(1, -1), action, reward, prob)
                 state = state_
+                # if done:
+                #     print(done)
 
-                if (t + 1) % self.batch_size == 0 or t == self.steps - 1:
-                    observations, reward = collector.get_current_data()
-                    value_ = self.critic.get_value(state_.reshape(1, -1))
-                    values = self.critic.get_value(observations)
-
-                    gae, target = gae_target(self.gamma, self.lambada, reward, values, value_, done)
-
-                    collector.get_gae_target(gae, target)
+                # if (t + 1) % self.batch_size == 0 or t == self.steps - 1:
+                #     observations, reward = collector.get_current_data()
+                #     value_ = self.critic.get_value(state_.reshape(1, -1))
+                #     values = self.critic.get_value(observations)
+                #
+                #     gae, target = gae_target(self.gamma, self.lambada, reward, values, value_, done)
+                #
+                #     collector.get_gae_target(gae, target)
 
             batches.append(collector)
 
@@ -101,26 +103,27 @@ class Worker2:
             collector = Collector(observation_dims=self.obs_dims, action_dims=self.act_dims,
                                   episode_length=self.steps)
             state = env.reset()
+            state = state.reshape(1, -1)
             # print(i)
 
             for t in range(self.steps):
-                state = state.reshape(1, -1)
                 action, prob = self.policy.get_action(state)
 
                 action_ = action * 2
 
                 state_, reward, done, _ = env.step(action_)
-                collector.store(state, action, reward, prob)
+                state_.reshape(1, -1)
+                collector.store(state, state_, action, reward, prob)
                 state = state_
 
-                if (t + 1) % self.batch_size == 0 or t == self.steps - 1:
-                    observations, reward = collector.get_current_data()
-                    value_ = self.critic.get_value(state_.reshape(1, -1))
-                    values = self.critic.get_value(observations)
-
-                    gae, target = gae_target(self.gamma, self.lambada, reward, values, value_, done)
-
-                    collector.get_gae_target(gae, target)
+                # if (t + 1) % self.batch_size == 0 or t == self.steps - 1:
+                #     observations, reward = collector.get_current_data()
+                #     value_ = self.critic.get_value(state_.reshape(1, -1))
+                #     values = self.critic.get_value(observations)
+                #
+                #     gae, target = gae_target(self.gamma, self.lambada, reward, values, value_, done)
+                #
+                #     collector.get_gae_target(gae, target)
 
             batches.append(collector)
 

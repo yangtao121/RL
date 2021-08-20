@@ -40,8 +40,11 @@ hyper_parameters = HyperParameter(
     update_steps=10,
     gamma=0.99,
     lambada=0.95,
+    scale=False,
+    center=True,
+    reward_scale=True,
+    clip_value=True,
     center_adv=True,
-    clip_value=True
 )
 
 actor = gaussian_mlp(
@@ -76,4 +79,4 @@ ppo = PPO(
     net_visualize=True
 )
 
-ppo.train(title='clip_value+center_adv')
+ppo.train(title='clip_value+center_adv r+cen')

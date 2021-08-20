@@ -29,6 +29,9 @@ class HyperParameter:
                  gamma=0.99,
                  lambada=0.95,
                  tolerance=1e-6,
+                 reward_scale=False,
+                 scale=False,
+                 center=False,
                  center_adv=False,
                  clip_value=False
                  ):
@@ -39,5 +42,8 @@ class HyperParameter:
         self.gamma = gamma
         self.lambada = lambada
         self.tolerance = tolerance
-        self.center_adv = center_adv
+        self.center = center
         self.clip_value = clip_value
+        self.reward_scale = reward_scale
+        self.scale = scale
+        self.center_adv = center_adv
