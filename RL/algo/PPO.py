@@ -161,9 +161,6 @@ class PPO:
         old_probs = np.concatenate([batch.prob_buffer for batch in batches])
         # tf_next_observation_buffer = tf.cast(next_observation_buffer, dtype=tf.float32)
 
-        if self.reward_scale:
-            reward_buffer = self.RewardScale(reward_buffer)
-
         values = self.get_v(observation_buffer).numpy()
         values_ = self.get_v(next_observation_buffer).numpy()
 
