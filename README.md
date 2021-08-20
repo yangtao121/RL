@@ -14,6 +14,9 @@
 1. 规定optimize函数返回值。
 ### 2021年8月15日
 1. 解决内存泄漏问题。(方式较为粗暴)
+### 2021年8月20日
+1. 增加reward scale。
+2. 添加全新的参数配置方式。
 
 # 安装说明
 `git clone https://github.com/yangtao121/RL

@@ -61,8 +61,7 @@ def standardize(data):
         np.mean(data),
         np.std(data)
     )
-    data = (data - mean) / std
-
+    data = (data - mean) / (std+1e-8)
     return data
 
 

@@ -1,5 +1,4 @@
 from RL.common.collector import Collector
-from RL.common.functions import gae_target
 
 from multiprocessing import Process
 from multiprocessing import Queue
@@ -39,25 +38,12 @@ class Worker:
         for i in range(self.trajs):
             collector = Collector(observation_dims=self.obs_dims, action_dims=self.act_dims,
                                   episode_length=self.steps)
-            state,_= self.env.reset()
-            # print(i)
-
+            state, _ = self.env.reset()
             for t in range(self.steps):
                 action, prob = self.policy.get_action(state)
-
                 state_, reward, done, _ = self.env.step(action)
-                collector.store(state, action, reward, prob)
+                collector.store(state, state_, action, reward, prob)
                 state = state_
-
-                if (t + 1) % self.batch_size == 0 or t == self.steps - 1:
-                    observations, reward = collector.get_current_data()
-                    value_ = self.critic.get_value(state_)
-                    values = self.critic.get_value(observations)
-
-                    gae, target = gae_target(self.gamma, self.lambada, reward, values, value_, done)
-
-                    collector.get_gae_target(gae, target)
-
             batches.append(collector)
 
         return batches

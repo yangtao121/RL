@@ -4,6 +4,8 @@ import numpy as np
 class Collector:
     def __init__(self, observation_dims, action_dims, episode_length):
         self.observation_buffer = np.zeros((episode_length, observation_dims), dtype=np.float32)
+        self.next_observation_buffer = np.zeros((episode_length, observation_dims), dtype=np.float32)
+
         self.action_buffer = np.zeros((episode_length, action_dims), dtype=np.float32)
         self.reward_buffer = np.zeros((episode_length, 1), dtype=np.float32)
 
@@ -15,8 +17,9 @@ class Collector:
         self.pointer = 0
         self.last_pointer = 0
 
-    def store(self, observation, action, reward, prob):
+    def store(self, observation, next_observation, action, reward, prob):
         self.observation_buffer[self.pointer] = observation
+        self.next_observation_buffer[self.pointer] = next_observation
         self.action_buffer[self.pointer] = action
         self.reward_buffer[self.pointer] = reward
         self.prob_buffer[self.pointer] = prob
