@@ -13,3 +13,5 @@ tensorflow>=2.6.0rc1
 2. 针对bullet这类环境需要定制PPO，参考PPO_Multi。
 ## 2021年8月5日
 1. 内存泄漏解决方法：使用tensorflow2.6.0rc2即可。
+
+# This project has been migrated to https://gitee.com/yangtaohome/RL
